@@ -1,0 +1,148 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Calculator',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: CalculatorPage(),
+    );
+  }
+}
+
+class CalculatorPage extends StatefulWidget {
+  @override
+  _CalculatorPageState createState() => _CalculatorPageState();
+}
+
+class _CalculatorPageState extends State<CalculatorPage> {
+  String result = '';
+  String input = '';
+
+  void buttonPressed(String buttonText) {
+    setState(() {
+      if (buttonText == 'C') {
+        input = '';
+        result = '';
+      } else if (buttonText == '=') {
+        try {
+          result = evaluateExpression(input).toString();
+        } catch (e) {
+          result = 'Error';
+        }
+      } else {
+        input += buttonText;
+      }
+    });
+  }
+
+  double evaluateExpression(String expr) {
+    // A simple parser that allows you to evaluate expressions
+    double num1 = double.parse(expr.split(RegExp(r'[\+\-\*\/]'))[0]);
+    double num2 = double.parse(expr.split(RegExp(r'[\+\-\*\/]'))[1]);
+    String operator = expr.replaceAll(RegExp(r'[0-9]'), '');
+
+    switch (operator) {
+      case '+':
+        return num1 + num2;
+      case '-':
+        return num1 - num2;
+      case '*':
+        return num1 * num2;
+      case '/':
+        return num1 / num2;
+      default:
+        throw Exception('Unknown operator');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Calculator'),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 24, horizontal: 12),
+            alignment: Alignment.centerRight,
+            child: Text(
+              input,
+              style: TextStyle(fontSize: 48),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 24, horizontal: 12),
+            alignment: Alignment.centerRight,
+            child: Text(
+              result,
+              style: TextStyle(fontSize: 24, color: Colors.grey),
+            ),
+          ),
+          Expanded(child: Divider()),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              buildButton('7'),
+              buildButton('8'),
+              buildButton('9'),
+              buildButton('/'),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              buildButton('4'),
+              buildButton('5'),
+              buildButton('6'),
+              buildButton('*'),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              buildButton('1'),
+              buildButton('2'),
+              buildButton('3'),
+              buildButton('-'),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              buildButton('C'),
+              buildButton('0'),
+              buildButton('='),
+              buildButton('+'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildButton(String buttonText) {
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: ElevatedButton(
+        onPressed: () => buttonPressed(buttonText),
+        child: Text(
+          buttonText,
+          style: TextStyle(fontSize: 24),
+        ),
+        style: ElevatedButton.styleFrom(
+          minimumSize: Size(70, 70),
+        ),
+      ),
+    );
+  }
+}
